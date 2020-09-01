@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode.JONSKETCH.DriveObjectLibrary;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "Test")
+@Autonomous(name = "erdtfgvhybjunkm,")
 public class Test extends LinearOpMode {
 
     ValueStorage vals = new ValueStorage();

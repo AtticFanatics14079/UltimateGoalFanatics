@@ -13,7 +13,7 @@ import java.util.Arrays;
 //import org.firstinspires.ftc.teamcode.AtticFanatics2020SeasonPrograms.Referenced.Multithread.MovementAlgorithms;
 //import org.firstinspires.ftc.teamcode.NewMultithreadRecord.WritingProcesses.WritingThread;
 
-@TeleOp(name= "Write TeleOp to File for Autonomous")
+@TeleOp(name= "asdefgrthy")
 public class ControllerInput extends LinearOpMode {
 
     static ValueStorage vals = new ValueStorage();
@@ -78,15 +78,8 @@ public class ControllerInput extends LinearOpMode {
 
         System.out.println("here");
 
-        if(vals.receivedDesiredVals) Arrays.fill(changedParts, false);
-
         //Write what each input should correspond to (e.g. translating gamepad 1 left stick to
         //velocities for hardwareActions 1-4). Make sure to add it to the changedParts list every time.
-
-        changedParts[0] = true; //This line is because we will always be changing these motors.
-        changedParts[1] = true; //This line is because we will always be changing these motors.
-        changedParts[2] = true; //This line is because we will always be changing these motors.
-        changedParts[3] = true; //This line is because we will always be changing these motors.
 
         GAS = voltMult;
 

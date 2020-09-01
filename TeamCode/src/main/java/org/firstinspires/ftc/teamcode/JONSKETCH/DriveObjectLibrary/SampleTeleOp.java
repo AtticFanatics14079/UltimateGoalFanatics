@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp
+@TeleOp(name = "rewsrdfctgvbhjnk")
 public class SampleTeleOp extends LinearOpMode {
 
     public double GAS = 1, straightGas, sideGas, turnGas, startTime = 0;

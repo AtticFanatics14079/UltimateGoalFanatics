@@ -24,7 +24,7 @@ public class HardwareThread extends Thread {
         hardwareVals = new double[size][];
         lastRun = new double[size];
         //voltMult = 13.0/config.voltSense.getVoltage();
-        config.setBulkCachingManual();
+        config.setBulkCachingManual(true);
     }
 
     public void run(){
