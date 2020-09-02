@@ -38,7 +38,7 @@ public class OdometryThread extends Thread implements DOThread {
         ElapsedTime time = new ElapsedTime();
         while(!stop) {
             if(time.milliseconds() - lastTime >= 5) {
-                double[] encoderVals = vals.hardware(false, null, odo.getPartNum());
+                double[] encoderVals = odo.podPositions();
                 if(odo.getClass() == DThreeWheelOdo.class) {
                     threeWheel(encoderVals);
                 }
@@ -59,7 +59,7 @@ public class OdometryThread extends Thread implements DOThread {
         double leftTotal = encoderVals[0] * inchesPerTick;
         double rightTotal = encoderVals[1] * inchesPerTick;
         double rawAngle = (leftTotal - rightTotal) / dimensions[0]; //Brad
-        double auxiliaryPrediction = angleChange * dimensions[2];
+        double auxiliaryPrediction = angleChange * dimensions[2]; //Was 2, checking later
         double forward = (leftWheelChange + rightWheelChange) / 2;
         double side = frontWheelChange - auxiliaryPrediction;
 

@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import java.util.Arrays;
+
 @TeleOp
 public class SampleTeleOp extends LinearOpMode {
 
@@ -20,12 +22,15 @@ public class SampleTeleOp extends LinearOpMode {
         hardware = new HardwareThread(hardwareMap, vals, config);
         //hardware.config.ExtendGripper.setPID(2, 0, 0); //Gonna need to mess with this one
         waitForStart();
+        System.out.println("1");
         ElapsedTime time = new ElapsedTime();
         double lastTime = time.milliseconds();
         hardware.start();
         hardware.startTime(time);
+        //config.odometry.beginTracking();
         while(!isStopRequested()){
             if(time.milliseconds() - lastTime >= 5) {
+                System.out.println("2");
                 lastTime = time.milliseconds();
                 getInput();
             }
@@ -34,7 +39,10 @@ public class SampleTeleOp extends LinearOpMode {
     }
 
     private void getInput(){
+        System.out.println("3");
         setPower(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+        telemetry.addData("Values: ", config.backLeft.get());
+        telemetry.update();
         //if(gamepad1.dpad_left) hardware.config.ExtendGripper.set(1000); //THIS MAY BE SKETCH BECAUSE BAD PIDs!!!
         //else if(gamepad1.dpad_right) hardware.config.ExtendGripper.set(0);
         /* Next step (once we figure out the PIDs)

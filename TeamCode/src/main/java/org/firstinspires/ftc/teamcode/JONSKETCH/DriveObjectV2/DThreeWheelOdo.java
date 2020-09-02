@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode.JONSKETCH.DriveObjectV2;
 
-public class DThreeWheelOdo implements Odometry, DriveObject {
+public class DThreeWheelOdo implements Odometry {
 
-    DOdometryPod[] odoPods;
+    public DOdometryPod[] odoPods;
 
     double x, y, heading, inchesPerTick;
-    int partNum;
 
     //First val is trackwith, second value is forward offset, third is auxiliary trackwidth
     double[] dimensions;
@@ -23,28 +22,12 @@ public class DThreeWheelOdo implements Odometry, DriveObject {
         this.inchesPerTick = inchesPerTick;
     }
 
-    public void set(double value) {
-        //Do nothing
-    }
-
-    public int getPartNum() {
-        return partNum;
+    public double[] podPositions() {
+        return new double[]{odoPods[0].get()[0], odoPods[1].get()[0], odoPods[2].get()[0]};
     }
 
     public double[] get() {
-        return new double[0];
-    }
-
-    public void setHardware(double value) {
-        //Do nothing
-    }
-
-    public double[] getHardware() {
-        return new double[0];
-    }
-
-    public void endThreads() {
-        thread.Stop();
+        return new double[]{x, y, heading};
     }
 
     public Point getPosition() {

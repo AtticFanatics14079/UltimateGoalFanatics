@@ -1,14 +1,21 @@
 package org.firstinspires.ftc.teamcode.JONSKETCH.DriveObjectV2;
 
-import com.qualcomm.robotcore.hardware.DcMotorImplEx;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class DOdometryPod implements DriveObject {
 
-    private DcMotorImplEx odoPod;
+    private DcMotor odoPod;
     private int partNum;
     private double ticksPerInch = 1000; //MODIFY WITH THE EXACT VALUE
 
     private ValueStorage vals;
+
+    public DOdometryPod(ValueStorage vals, HardwareMap hwMap, String objectName, int partNum) {
+        odoPod = hwMap.get(DcMotor.class, objectName);
+        this.vals = vals;
+        this.partNum = partNum;
+    }
 
     public void set(double value) {
         //Do nothing
