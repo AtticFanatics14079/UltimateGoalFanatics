@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.HardwareConfigs.CVConfig;
 import org.firstinspires.ftc.teamcode.HardwareConfigs.LimitConfiguration;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -15,6 +16,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
+
+import java.util.Arrays;
 
 
 /**
@@ -42,7 +45,7 @@ public class TurnToCircle extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        LimitConfiguration config = new LimitConfiguration();
+        CVConfig config = new CVConfig();
         config.Configure(hardwareMap);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -53,7 +56,6 @@ public class TurnToCircle extends LinearOpMode {
         //width, height
         //width = height in this case, because camera is in portrait mode.
 
-        config.servo.setPosition(0.85);
 
         waitForStart();
         //all of our movement jazz
@@ -62,15 +64,27 @@ public class TurnToCircle extends LinearOpMode {
             telemetry.addData("Height", rows);
             telemetry.addData("Width", cols);
             telemetry.addData("Ball Pos", ballPos);
-            telemetry.addData("Servo Pos", config.servo.getPosition());
 
-            if(ballPos == -1) config.servo.setPosition(config.servo.getPosition() + 0.01);
-            else if(ballPos == 1) config.servo.setPosition(config.servo.getPosition() - 0.01);
-
-            if(config.isPressed1() || config.isPressed2()) break;
+            if(ballPos == -1) {
+                config.backLeft.setPower(.1);
+                config.frontLeft.setPower(.1);
+                config.backRight.setPower(-.1);
+                config.frontRight.setPower(-.1);
+            }
+            else if(ballPos == 1) {
+                config.backLeft.setPower(-.1);
+                config.frontLeft.setPower(-.1);
+                config.backRight.setPower(.1);
+                config.frontRight.setPower(.1);
+            }
+            else{
+                config.backLeft.setPower(0);
+                config.frontLeft.setPower(0);
+                config.backRight.setPower(0);
+                config.frontRight.setPower(0);
+            }
 
             telemetry.update();
-            sleep(200);
         }
     }
 
