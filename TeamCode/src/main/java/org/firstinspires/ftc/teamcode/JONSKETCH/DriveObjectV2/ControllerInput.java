@@ -78,7 +78,7 @@ public class ControllerInput extends LinearOpMode {
 
         System.out.println("here");
 
-        if(vals.receivedDesiredVals) Arrays.fill(changedParts, false);
+        //if(vals.receivedDesiredVals) Arrays.fill(changedParts, false);
 
         //Write what each input should correspond to (e.g. translating gamepad 1 left stick to
         //velocities for hardwareActions 1-4). Make sure to add it to the changedParts list every time.

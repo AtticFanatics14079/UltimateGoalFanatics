@@ -66,16 +66,16 @@ public class TurnToCircle extends LinearOpMode {
             telemetry.addData("Ball Pos", ballPos);
 
             if(ballPos == -1) {
-                config.backLeft.setPower(.1);
-                config.frontLeft.setPower(.1);
-                config.backRight.setPower(-.1);
-                config.frontRight.setPower(-.1);
+                config.backLeft.setPower(.2);
+                config.frontLeft.setPower(.2);
+                config.backRight.setPower(-.2);
+                config.frontRight.setPower(-.2);
             }
             else if(ballPos == 1) {
-                config.backLeft.setPower(-.1);
-                config.frontLeft.setPower(-.1);
-                config.backRight.setPower(.1);
-                config.frontRight.setPower(.1);
+                config.backLeft.setPower(-.2);
+                config.frontLeft.setPower(-.2);
+                config.backRight.setPower(.2);
+                config.frontRight.setPower(.2);
             }
             else{
                 config.backLeft.setPower(0);
@@ -134,7 +134,7 @@ public class TurnToCircle extends LinearOpMode {
             //Imgproc.cvtColor(input, circleMat, Imgproc.COLOR_RGB2GRAY);
             Core.extractChannel(rawMat, gray, 0);
             Imgproc.medianBlur(circleMat, circleMat, 5);
-            Imgproc.HoughCircles(gray, circles, Imgproc.HOUGH_GRADIENT, 1.0, circleMat.rows()/16.0, 200.0, 47.0, 10, 200);
+            Imgproc.HoughCircles(gray, circles, Imgproc.HOUGH_GRADIENT, 1.0, circleMat.rows()/16.0, 260.0, 53.0, 50, 200);
             input.copyTo(circleMat, gray);
             //System.out.println("Houghcircles finished");
             circleSize = new int[circles.cols()];
