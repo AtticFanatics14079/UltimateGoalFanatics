@@ -12,7 +12,7 @@ public class ValueStorage {
 
     public void setup(int size){
         runValues = new double[size];
-        hardwareValues = new double[size][];
+        hardwareValues = new double[size][1]; //Potentially later change to a large value, currently (9/4/20) having issues with premature calls to hardware.
     }
 
     public void clear(){

@@ -57,6 +57,7 @@ public class HardwareThread extends Thread {
         config.clearBulkCache();
 
         for(int i = 0; i < hardwareVals.length; i++) {
+            System.out.println("Here " + i);
             hardwareVals[i] = config.hardware.get(i).getHardware();
         }
 

@@ -17,31 +17,36 @@ public class SampleTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        config = new SampleConfiguration();
-        ValueStorage vals = new ValueStorage();
-        hardware = new HardwareThread(hardwareMap, vals, config);
-        //hardware.config.ExtendGripper.setPID(2, 0, 0); //Gonna need to mess with this one
-        waitForStart();
-        System.out.println("1");
-        ElapsedTime time = new ElapsedTime();
-        double lastTime = time.milliseconds();
-        hardware.start();
-        hardware.startTime(time);
-        //config.odometry.beginTracking();
-        while(!isStopRequested()){
-            if(time.milliseconds() - lastTime >= 5) {
-                System.out.println("2");
-                lastTime = time.milliseconds();
-                getInput();
+        try {
+            config = new SampleConfiguration();
+            ValueStorage vals = new ValueStorage();
+            hardware = new HardwareThread(hardwareMap, vals, config);
+            //hardware.config.ExtendGripper.setPID(2, 0, 0); //Gonna need to mess with this one
+            waitForStart();
+            System.out.println("1");
+            ElapsedTime time = new ElapsedTime();
+            double lastTime = time.milliseconds();
+            hardware.start();
+            hardware.startTime(time);
+            config.odometry.beginTracking();
+            while(!isStopRequested()){
+                if(time.milliseconds() - lastTime >= 5) {
+                    System.out.println("2");
+                    lastTime = time.milliseconds();
+                    getInput();
+                }
             }
+        } catch(Exception e) {
+            System.out.println("Exception: " + e);
+        } finally {
+            hardware.Stop();
         }
-        hardware.Stop();
     }
 
     private void getInput(){
         System.out.println("3");
         setPower(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
-        telemetry.addData("Values: ", config.backLeft.get());
+        telemetry.addData("Values: ", Arrays.toString(config.odometry.get()));
         telemetry.update();
         //if(gamepad1.dpad_left) hardware.config.ExtendGripper.set(1000); //THIS MAY BE SKETCH BECAUSE BAD PIDs!!!
         //else if(gamepad1.dpad_right) hardware.config.ExtendGripper.set(0);

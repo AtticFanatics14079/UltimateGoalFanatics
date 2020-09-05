@@ -23,9 +23,9 @@ public class SampleConfiguration implements Configuration {
         frontLeft = new DMotor(vals, hwMap, "front_left_motor", i++);
         frontRight = new DMotor(vals, hwMap, "front_right_motor", i++);
         backRight = new DMotor(vals, hwMap, "back_right_motor", i++);
-        frontOdoPod = new DOdometryPod(vals, hwMap, "front_odometry_pod", i++);
-        leftOdoPod = new DOdometryPod(vals, hwMap, "left_odometry_pod", i++);
-        rightOdoPod = new DOdometryPod(vals, hwMap, "right_odometry_pod", i++);
+        frontOdoPod = new DOdometryPod(vals, hwMap, "frontEncoder", i++);
+        leftOdoPod = new DOdometryPod(vals, hwMap, "leftEncoder", i++);
+        rightOdoPod = new DOdometryPod(vals, hwMap, "rightEncoder", i++);
         odometry = new DThreeWheelOdo(0, 0, 0, vals, new DOdometryPod[]{leftOdoPod, rightOdoPod, frontOdoPod}, 274.29, 9.92, 0, 13.5);
 
         hardware.add(backLeft);

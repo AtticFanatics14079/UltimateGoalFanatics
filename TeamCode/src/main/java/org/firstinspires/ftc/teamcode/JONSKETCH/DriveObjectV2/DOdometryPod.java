@@ -34,6 +34,7 @@ public class DOdometryPod implements DriveObject {
     }
 
     public double[] getHardware() {
+        System.out.println(odoPod.getCurrentPosition());
         return new double[]{odoPod.getCurrentPosition()};
     }
 
