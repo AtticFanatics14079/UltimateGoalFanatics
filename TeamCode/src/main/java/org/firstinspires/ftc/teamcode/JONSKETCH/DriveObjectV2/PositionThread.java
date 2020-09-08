@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.JONSKETCH.DriveObjectV2;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import java.util.Arrays;
+
 public class PositionThread extends Thread implements DOThread {
 
     private int pos; //Arrays are all ordered according to partNum.
@@ -10,61 +12,63 @@ public class PositionThread extends Thread implements DOThread {
     private volatile double[] PID;
     private boolean stillGoing = true, group = false;
     private volatile boolean stop;
+    private ValueStorage vals;
 
-    public PositionThread(int position, double maxSpeed, double tolerance, DMotor motor){
+    public PositionThread(int position, double maxSpeed, double tolerance, DMotor motor, ValueStorage vals){
         this.drive = new DriveObject[]{motor};
         pos = position;
         this.maxSpeed = maxSpeed;
         PID = motor.getPID().clone();
         this.tolerance = tolerance;
+        this.vals = vals;
     }
 
-    public PositionThread(int position, double maxSpeed, double tolerance, DMotor[] motors){
+    public PositionThread(int position, double maxSpeed, double tolerance, DMotor[] motors, ValueStorage vals){
         group = true;
         pos = position;
         this.maxSpeed = maxSpeed;
         PID = motors[0].getPID().clone();
         this.drive = motors;
         this.tolerance = tolerance;
+        this.vals = vals;
     }
 
     public PositionThread(){}
 
     public void run(){
         ElapsedTime time = new ElapsedTime();
-        lastTime = 0;
+        lastTime = 100; //Temporary stopgap until I can get the timing with HardwareThread solid.
         double velocity = 0;
         while(!stop && stillGoing) {
-            if(time.milliseconds() - lastTime >= 5) {
-                lastTime = time.milliseconds();
-                stillGoing = false;
-                if(group){
-                    stillGoing = true;
-                    try {
-                        velocity = groupToPosition();
-                    } catch(Exception e) {
-                        System.out.println(e);
-                    }
-                    if(Math.abs(error) < tolerance) {
-                        velocity = 0;
-                        stop = true;
-                    }
-                    for(DriveObject d : drive) {
-                        d.set(velocity);
-                    }
+            vals.waitForCycle();
+            stillGoing = false;
+            if(group){
+                stillGoing = true;
+                try {
+                    velocity = groupToPosition();
+                } catch(Exception e) {
+                    System.out.println(e);
                 }
-                else if(drive[0] != null){
-                    stillGoing = true;
-                    try {
-                        velocity = toPosition();
-                    } catch(Exception e) {
-                        System.out.println(e);
-                    }
-                    drive[0].set(velocity);
-                    if(Math.abs(error) < tolerance) { //This is using velocity as an indicator to stop, may change later.
-                        drive[0].set(0);
-                        drive[0] = null;
-                    }
+                if(Math.abs(error) < tolerance) {
+                    velocity = 0;
+                    stop = true;
+                }
+                for(DriveObject d : drive) {
+                    d.set(velocity);
+                }
+            }
+            else if(drive[0] != null){
+                stillGoing = true;
+                try {
+                    velocity = toPosition();
+                    System.out.println("Velocity be " + velocity);
+                } catch(Exception e) {
+                    System.out.println(e);
+                }
+                drive[0].set(velocity);
+                if(Math.abs(error) < tolerance) {
+                    drive[0].set(0);
+                    drive[0] = null;
                 }
             }
         }
@@ -72,13 +76,14 @@ public class PositionThread extends Thread implements DOThread {
 
     private double toPosition(){
         double velocity = 0;
+        System.out.println("Values be " + Arrays.toString(drive[0].get()));
         error = pos - drive[0].get()[1];
         totalError += error;
         velocity += PID[0] * error;
         velocity += PID[1] * totalError;
         velocity += PID[2] * (error - lastError);
 
-        if(velocity > PID[3]) velocity = PID[3] * Math.abs(velocity) / velocity;
+        if(velocity > PID[3]) velocity = PID[3] * (velocity > 0 ? 1 : -1);
 
         velocity *= maxSpeed;
 

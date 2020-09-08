@@ -9,9 +9,6 @@ import java.util.Arrays;
 @TeleOp
 public class SampleTeleOp extends LinearOpMode {
 
-    public double GAS = 1, straightGas, sideGas, turnGas, startTime = 0;
-    private int level = 0;
-    private double[] levels = {0, 1000, 2000, 3000, 4000};
     HardwareThread hardware;
     SampleConfiguration config;
 
@@ -23,42 +20,41 @@ public class SampleTeleOp extends LinearOpMode {
             hardware = new HardwareThread(hardwareMap, vals, config);
             //hardware.config.ExtendGripper.setPID(2, 0, 0); //Gonna need to mess with this one
             waitForStart();
-            System.out.println("1");
             ElapsedTime time = new ElapsedTime();
-            double lastTime = time.milliseconds();
             hardware.start();
-            hardware.startTime(time);
-            config.odometry.beginTracking();
+            //config.odometry.beginTracking();
             while(!isStopRequested()){
-                if(time.milliseconds() - lastTime >= 5) {
-                    System.out.println("2");
-                    lastTime = time.milliseconds();
-                    getInput();
-                }
+                vals.waitForCycle();
+                System.out.println("Finshed waiting, " + time.milliseconds());
+                getInput();
             }
         } catch(Exception e) {
             System.out.println("Exception: " + e);
         } finally {
+            config.odometry.endTracking();
             hardware.Stop();
         }
     }
 
     private void getInput(){
-        System.out.println("3");
         setPower(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
-        telemetry.addData("Values: ", Arrays.toString(config.odometry.get()));
+
+        //config.motor.setPower(1);
+
+        if(gamepad1.a) config.servo.set(1);
+        else if(gamepad1.b) config.servo.set(0);
+
+        if(gamepad1.x) config.motor.setPosition(1000, 1, 50);
+        else if(gamepad1.y) config.motor.setPosition(0, 1, 50);
+
+        //if(gamepad1.start) {
+        //}
+
+        telemetry.addData("Values: ", Arrays.toString(config.backLeft.get()));
+
+        System.out.println("After in runValues in op mode");
+
         telemetry.update();
-        //if(gamepad1.dpad_left) hardware.config.ExtendGripper.set(1000); //THIS MAY BE SKETCH BECAUSE BAD PIDs!!!
-        //else if(gamepad1.dpad_right) hardware.config.ExtendGripper.set(0);
-        /* Next step (once we figure out the PIDs)
-        if(gamepad1.dpad_up) {
-            Sequence s = new Sequence(() -> hardware.config.ExtendGripper.set(0));
-            Sequence t = new Sequence(() -> hardware.config.ExtendGripper.set(1000), s);
-            Thread n = new Thread(t);
-            n.run();
-        }
-        //What this should do is extend to 1000, then extend back when it's done.
-        */
     }
 
     private void setPower(double px, double py, double pa){

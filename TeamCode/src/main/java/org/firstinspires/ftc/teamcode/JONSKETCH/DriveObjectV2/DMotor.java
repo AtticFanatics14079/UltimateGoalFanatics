@@ -71,15 +71,16 @@ public class DMotor implements DriveObject {
     }
 
     public DOThread setPosition(int position, double relativeSpeed, double tolerance) {
-        if(thread != null && thread.isAlive()) thread.Stop();
-        thread = new PositionThread(position, relativeSpeed, tolerance, this);
+        //Trying out never overriding threads (aka forcing use of endThreads() when need to replace active thread)
+        if(thread != null && thread.isAlive()) return null;
+        thread = new PositionThread(position, relativeSpeed, tolerance, this, vals);
         thread.start();
         return thread;
     }
 
     public DOThread groupSetPosition(int position, double relativeSpeed, double tolerance, DMotor... motors) {
         if(thread.isAlive()) thread.Stop();
-        thread = new PositionThread(position, relativeSpeed, tolerance, motors);
+        thread = new PositionThread(position, relativeSpeed, tolerance, motors, vals);
         thread.start();
         return thread;
     }

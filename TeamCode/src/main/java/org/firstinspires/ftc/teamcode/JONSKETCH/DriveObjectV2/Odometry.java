@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.JONSKETCH.DriveObjectV2;
 
-public interface Odometry {
+public interface Odometry extends DriveObject {
 
     Point getPosition();
     void setPosition(Point newPos);
@@ -10,4 +10,5 @@ public interface Odometry {
     double getY();
     double getHeading();
     void beginTracking();
+    void endTracking();
 }

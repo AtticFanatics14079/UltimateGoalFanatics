@@ -45,7 +45,6 @@ public class ControllerInput extends LinearOpMode {
             //do stuff if we want to loop before pressing play
         }
         ElapsedTime time = new ElapsedTime();
-        hardware.startTime(time);
         //write.Start();
         //HooksOpen = true;
         //Anything else we want to do at the start of pressing play

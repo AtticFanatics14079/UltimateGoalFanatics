@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.JONSKETCH.DriveObjectV2;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.List;
 
@@ -11,7 +12,9 @@ public class SampleConfiguration implements Configuration {
 
     public DMotor backLeft, frontLeft, frontRight, backRight;
     public DOdometryPod frontOdoPod, leftOdoPod, rightOdoPod;
-    public DThreeWheelOdo odometry;
+    public DServo servo;
+    public DMotor motor;
+    public Odometry odometry;
 
     public void Configure(HardwareMap hwMap, ValueStorage vals){
         //Add all hardware devices here.
@@ -26,7 +29,9 @@ public class SampleConfiguration implements Configuration {
         frontOdoPod = new DOdometryPod(vals, hwMap, "frontEncoder", i++);
         leftOdoPod = new DOdometryPod(vals, hwMap, "leftEncoder", i++);
         rightOdoPod = new DOdometryPod(vals, hwMap, "rightEncoder", i++);
-        odometry = new DThreeWheelOdo(0, 0, 0, vals, new DOdometryPod[]{leftOdoPod, rightOdoPod, frontOdoPod}, 274.29, 9.92, 0, 13.5);
+        servo = new DServo(vals, hwMap, "servo", i++);
+        motor = new DMotor(vals, hwMap, "motor", i++);
+        odometry = new DThreeWheelOdo(0, 0, 0, vals, new DOdometryPod[]{leftOdoPod, rightOdoPod, frontOdoPod}, 1/274.29, 9.92, 0, 13.5);
 
         hardware.add(backLeft);
         hardware.add(frontLeft);
@@ -35,6 +40,9 @@ public class SampleConfiguration implements Configuration {
         hardware.add(frontOdoPod);
         hardware.add(leftOdoPod);
         hardware.add(rightOdoPod);
+        hardware.add(servo);
+        hardware.add(motor);
+        hardware.add(odometry);
         frontRight.reverse(true);
         backRight.reverse(true);
         //Adding more later
@@ -42,9 +50,7 @@ public class SampleConfiguration implements Configuration {
         //Below are other configuration activities that are necessary for writing to file.
         allHubs = hwMap.getAll(LynxModule.class);
 
-        for (LynxModule module : allHubs) {
-            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
+        setBulkCachingManual(true);
     }
 
     public void setBulkCachingManual(boolean manual){
@@ -55,8 +61,10 @@ public class SampleConfiguration implements Configuration {
 
     public void clearBulkCache(){
         for (LynxModule module : allHubs) {
-            if(module.getBulkCachingMode() == LynxModule.BulkCachingMode.MANUAL)
+            if(module.getBulkCachingMode() == LynxModule.BulkCachingMode.MANUAL) {
                 module.clearBulkCache();
+                module.getBulkData();
+            }
         }
     }
 }

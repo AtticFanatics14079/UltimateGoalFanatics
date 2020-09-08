@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.JONSKETCH.DriveObjectV2;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import java.util.Arrays;
+
 
 public class HardwareThread extends Thread {
 
@@ -28,37 +30,31 @@ public class HardwareThread extends Thread {
     }
 
     public void run(){
-        while(!setTime && !stop){}
+
+        time = new ElapsedTime();
+
         while(!stop) {
-            if(time.milliseconds() - lastTime >= 5) {
-                lastTime = time.milliseconds();
 
-                //Used to be used
-                //vals.time(true, time.milliseconds());
+            readHardware(); //Longest section by a ridiculous margin (about 90% of time)
 
-                readHardware();
-                runHardware(vals.runValues(false, 0, 0));
-            }
+            System.out.println("Hardware cycle: " + time.milliseconds());
+            vals.updateCycle();
+            //Should allow every other thread to simply wait for cycle. Consider moving this or adding a sleep to prevent runValues being off by a cycle.
+
+            runHardware(vals.runValues(false, 0, 0));
         }
         for(DriveObject d : config.hardware) {
             d.endThreads();
-            vals.clear();
         }
-    }
-
-    public void startTime(ElapsedTime time){
-        lastTime = time.milliseconds() - 2.5; //Sets lastTime off by the half interval
-        this.time = time;
-        setTime = true;
+        vals.clear();
     }
 
     private void readHardware(){
 
-        config.clearBulkCache();
+        config.clearBulkCache(); //Miniscule time
 
         for(int i = 0; i < hardwareVals.length; i++) {
-            System.out.println("Here " + i);
-            hardwareVals[i] = config.hardware.get(i).getHardware();
+            hardwareVals[i] = config.hardware.get(i).getHardware(); //Majority of time in this loop
         }
 
         vals.hardware(true, hardwareVals, 0);

@@ -35,13 +35,11 @@ public class OdometryThread extends Thread implements DOThread {
     }
 
     public void run() {
-        ElapsedTime time = new ElapsedTime();
         while(!stop) {
-            if(time.milliseconds() - lastTime >= 5) {
-                double[] encoderVals = odo.podPositions();
-                if(odo.getClass() == DThreeWheelOdo.class) {
-                    threeWheel(encoderVals);
-                }
+            vals.waitForCycle();
+            double[] encoderVals = odo.podPositions();
+            if(odo.getClass() == DThreeWheelOdo.class) {
+                threeWheel(encoderVals);
             }
         }
     }

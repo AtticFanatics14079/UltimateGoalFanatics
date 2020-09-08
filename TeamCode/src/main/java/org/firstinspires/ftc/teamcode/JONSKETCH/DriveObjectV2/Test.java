@@ -15,7 +15,6 @@ public class Test extends LinearOpMode {
         HardwareThread hardware = new HardwareThread(hardwareMap, vals, config);
         hardware.start();
         //System.out.println(hardware.config.hardware.get(0).getPID()[0] + " hf");
-        hardware.startTime(new ElapsedTime());
         Sequence s = new Sequence(() -> config.backLeft.groupSetPosition(3000, 1, 10, config.backLeft, config.backRight, config.frontLeft, config.frontRight), null);
         Sequence s2 = new Sequence(() -> config.backLeft.groupSetPosition(0, 1, 10, config.backLeft, config.backRight, config.frontLeft, config.frontRight), s);
         Thread t = new Thread(s2);

@@ -26,8 +26,30 @@ public class DThreeWheelOdo implements Odometry {
         return new double[]{odoPods[0].get()[0], odoPods[1].get()[0], odoPods[2].get()[0]};
     }
 
+    public void set(double value) {
+        //Do nothing
+    }
+
+    public int getPartNum() {
+        //Return -1
+        return -1;
+    }
+
     public double[] get() {
         return new double[]{x, y, heading};
+    }
+
+    public void setHardware(double value) {
+        //Do nothing
+    }
+
+    public double[] getHardware() {
+        //Do nothing
+        return new double[0];
+    }
+
+    public void endThreads() {
+        if(thread.isAlive()) thread.Stop();
     }
 
     public Point getPosition() {
@@ -55,5 +77,9 @@ public class DThreeWheelOdo implements Odometry {
     public void beginTracking() {
         thread = new OdometryThread(this, vals, dimensions, x, y, heading, inchesPerTick);
         thread.start();
+    }
+
+    public void endTracking() {
+        thread.Stop();
     }
 }
