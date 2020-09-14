@@ -11,20 +11,12 @@ public class AnthonyDriveObject extends LinearOpMode {
 
     SampleConfiguration config = new SampleConfiguration();
     ValueStorage vals = new ValueStorage();
-    HardwareThread hardware = new HardwareThread(hardwareMap, vals, config);
+    HardwareThread hardware;
     private boolean xPressed = false;
-
-    Sequence BIGSPICE1 = new Sequence(() -> config.motor.setForTime(2000,3), null);
-    Sequence BIGSPICE2 = new Sequence(() -> {
-        config.servo.set(0);
-        return null;
-    }, BIGSPICE1);
-    Sequence BIGSPICE3 = new Sequence(() -> config.backLeft.groupSetPosition(4000,0.5,100, config.backLeft,config.backRight,config.frontLeft,config.frontRight), BIGSPICE2);
-    Sequence BIGSPICE4 = new Sequence(() -> config.motor.setForTime(-2000,3),BIGSPICE3);
 
     public void runOpMode() throws InterruptedException {
         try{
-
+            hardware = new HardwareThread(hardwareMap, vals, config);
             waitForStart();
             ElapsedTime time = new ElapsedTime();
             hardware.start();
@@ -44,6 +36,14 @@ public class AnthonyDriveObject extends LinearOpMode {
     private void getInput() {
 
         setPower(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+
+        Sequence BIGSPICE1 = new Sequence(() -> config.motor.setForTime(2000,3), null);
+        Sequence BIGSPICE2 = new Sequence(() -> {
+            config.servo.set(1);
+            return null;
+        }, BIGSPICE1);
+        //Sequence BIGSPICE3 = new Sequence(() -> config.backLeft.groupSetPosition(4000,0.5,100, config.backLeft,config.backRight,config.frontLeft,config.frontRight), BIGSPICE2);
+        Sequence BIGSPICE4 = new Sequence(() -> config.motor.setForTime(-2000,3), BIGSPICE2);
 
         if(gamepad1.x && !xPressed){
             xPressed = true;

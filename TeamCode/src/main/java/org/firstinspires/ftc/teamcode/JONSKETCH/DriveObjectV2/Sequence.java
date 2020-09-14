@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.JONSKETCH.DriveObjectV2;
 
-public class Sequence implements Runnable{
+public class Sequence implements Runnable {
 
     private Action action;
     private Sequence sequence;
@@ -22,7 +22,6 @@ public class Sequence implements Runnable{
         if(sequence != null) {
             sequence.run();
         }
-        System.out.println("Is here");
         DOThread t = action.runAction();
         while(t != null && t.isAlive()){} //Accounts both for threads and single actions.
     }

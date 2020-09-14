@@ -28,7 +28,7 @@ public class ValueStorage {
     public synchronized void waitForCycle() {
         try {
             wait();
-            Thread.sleep((long) 0.3);
+            Thread.sleep(0, 300000);
         } catch(Exception e) {
             System.out.println(e);
         }
