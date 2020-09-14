@@ -98,7 +98,7 @@ public class DMotor implements DriveObject {
         return pid;
     }
 
-    public void setPID(double[] pid) {
+    public void setPID(double... pid) {
         if(pid.length != 4) return; //Potentially change
         this.pid = pid;
     }
