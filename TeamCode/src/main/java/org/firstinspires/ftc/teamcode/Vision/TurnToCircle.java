@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.HardwareConfigs.CVConfig;
 import org.firstinspires.ftc.teamcode.HardwareConfigs.LimitConfiguration;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -15,6 +16,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
+
+import java.util.Arrays;
 
 
 /**
@@ -35,14 +38,18 @@ public class TurnToCircle extends LinearOpMode {
     private final int rows = 640;
     private final int cols = 480;
 
+    private static int centerDist = 0;
+
     private static int ballPos = 0;
+
+    public static double param1 = 240, param2 = 44, circleRadius = 1.875, distanceCenter = 20, speedModifier = 1.0/1066, staticSpeed = 0.16;
 
     OpenCvCamera phoneCam;
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        LimitConfiguration config = new LimitConfiguration();
+        CVConfig config = new CVConfig();
         config.Configure(hardwareMap);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -53,7 +60,6 @@ public class TurnToCircle extends LinearOpMode {
         //width, height
         //width = height in this case, because camera is in portrait mode.
 
-        config.servo.setPosition(0.85);
 
         waitForStart();
         //all of our movement jazz
@@ -62,15 +68,27 @@ public class TurnToCircle extends LinearOpMode {
             telemetry.addData("Height", rows);
             telemetry.addData("Width", cols);
             telemetry.addData("Ball Pos", ballPos);
-            telemetry.addData("Servo Pos", config.servo.getPosition());
 
-            if(ballPos == -1) config.servo.setPosition(config.servo.getPosition() + 0.01);
-            else if(ballPos == 1) config.servo.setPosition(config.servo.getPosition() - 0.01);
-
-            if(config.isPressed1() || config.isPressed2()) break;
+            if(ballPos == -1) {
+                config.backLeft.setPower(speedModifier * centerDist + staticSpeed);
+                config.frontLeft.setPower(speedModifier * centerDist + staticSpeed);
+                config.backRight.setPower(-speedModifier * centerDist - staticSpeed);
+                config.frontRight.setPower(-speedModifier * centerDist - staticSpeed);
+            }
+            else if(ballPos == 1) {
+                config.backLeft.setPower(-speedModifier * centerDist - staticSpeed);
+                config.frontLeft.setPower(-speedModifier * centerDist - staticSpeed);
+                config.backRight.setPower(speedModifier * centerDist + staticSpeed);
+                config.frontRight.setPower(speedModifier * centerDist + staticSpeed);
+            }
+            else{
+                config.backLeft.setPower(0);
+                config.frontLeft.setPower(0);
+                config.backRight.setPower(0);
+                config.frontRight.setPower(0);
+            }
 
             telemetry.update();
-            sleep(200);
         }
     }
 
@@ -120,7 +138,7 @@ public class TurnToCircle extends LinearOpMode {
             //Imgproc.cvtColor(input, circleMat, Imgproc.COLOR_RGB2GRAY);
             Core.extractChannel(rawMat, gray, 0);
             Imgproc.medianBlur(circleMat, circleMat, 5);
-            Imgproc.HoughCircles(gray, circles, Imgproc.HOUGH_GRADIENT, 1.0, circleMat.rows()/16.0, 200.0, 47.0, 10, 200);
+            Imgproc.HoughCircles(gray, circles, Imgproc.HOUGH_GRADIENT, 1.0, circleMat.rows()/8.0, param1, param2, 5, 120);
             input.copyTo(circleMat, gray);
             //System.out.println("Houghcircles finished");
             circleSize = new int[circles.cols()];
@@ -129,17 +147,17 @@ public class TurnToCircle extends LinearOpMode {
             for (int x = 0; x < circles.cols(); x++) {
                 double[] c = circles.get(0, x);
                 Point center = new Point(Math.round(c[0]), Math.round(c[1]));
+                centerDist = (int) Math.abs(center.y - 320);
                 Point extra = new Point(center.x + 10, center.y +10);
                 // circle center
                 Imgproc.circle(circleMat, center, 1, new Scalar(0,100,100), 3, 8, 0 );
                 // circle outline
                 int radius = (int) Math.round(c[2]);
                 circleSize[x] = radius;
-                Imgproc.circle(circleMat, center, radius, new Scalar(255,0,255), 3, 8, 0 );
+                Imgproc.circle(circleMat, center, radius, new Scalar(0,255,0), 25, 8, 0 );
                 Imgproc.putText(circleMat, "Radius: " + radius, center, Imgproc.FONT_HERSHEY_DUPLEX, 0.7, new Scalar(255,0,0));
                 double focalLength = 518.4;
                 double distance = 0;
-                double circleRadius = 1.875;
                 distance = (circleRadius * focalLength) / radius;
                 Imgproc.putText(circleMat, "Distance: " + distance, new Point(center.x + 10, center.y + 10), Imgproc.FONT_HERSHEY_DUPLEX, 0.7, new Scalar(255,0,0));
             }
@@ -153,8 +171,8 @@ public class TurnToCircle extends LinearOpMode {
             if(largestIn != -1) {
                 Point newCenter = new Point(Math.round(circles.get(0, largestIn)[0]), Math.round(circles.get(0, largestIn)[1]));
                 Imgproc.putText(circleMat, "Y: " + newCenter.y, newCenter, Imgproc.FONT_HERSHEY_DUPLEX, 0.7, new Scalar(0,0,0));
-                if(newCenter.y < 300) ballPos = -1;
-                else if(newCenter.y > 340) ballPos = 1;
+                if(newCenter.y < 320 - distanceCenter) ballPos = -1;
+                else if(newCenter.y > 320 + distanceCenter) ballPos = 1;
                 else ballPos = 0;
             }
             else ballPos = 0;
