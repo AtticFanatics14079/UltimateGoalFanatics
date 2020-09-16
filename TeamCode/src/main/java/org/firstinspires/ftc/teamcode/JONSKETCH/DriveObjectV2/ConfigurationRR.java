@@ -75,7 +75,7 @@ public class ConfigurationRR extends MecanumDrive implements Configuration {
 
     private ArrayList<DMotor> motors = new ArrayList<>();
     private List<LynxModule> allHubs;
-    private BNO055IMU imu;
+    private DIMU imu;
 
     public ConfigurationRR(HardwareMap hardwareMap) {
         super(DriveConstants.kV, DriveConstants.kA, DriveConstants.kStatic, TRACK_WIDTH);
@@ -140,10 +140,7 @@ public class ConfigurationRR extends MecanumDrive implements Configuration {
         setLocalizer(new StandardTrackingWheelLocalizer(hwMap));
 
         //Need to make an IMU class soon, no idea how I haven't yet.
-        imu = hwMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
-        imu.initialize(parameters);
+        imu = new DIMU(vals, hwMap, i++);
     }
 
     public void setBulkCachingManual(boolean manual){
