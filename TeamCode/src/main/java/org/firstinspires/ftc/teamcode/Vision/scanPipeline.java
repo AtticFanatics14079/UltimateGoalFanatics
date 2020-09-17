@@ -135,7 +135,7 @@ public class scanPipeline extends LinearOpMode {
             boolean yellowness1 = color1 > thresh;
             boolean yellowness2 = color2 > thresh;
 
-            if(yellowness1 && yellowness2) stackSize = 4; else if(yellowness2) stackSize = 1; else stackSize = 0;
+            stackSize = yellowness1 ? 4 : yellowness2 ? 1 : 0;
 
             Imgproc.rectangle(MediumRareMat, topLeft1, bottomRight1, yellowness1 ? new Scalar(0, 255, 0) : new Scalar(255, 0, 0));
             Imgproc.rectangle(MediumRareMat, topLeft2, bottomRight2, yellowness2 ? new Scalar(0, 255, 0) : new Scalar(255, 0, 0));
