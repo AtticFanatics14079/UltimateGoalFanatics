@@ -33,11 +33,12 @@ public class scanPipeline extends LinearOpMode {
 
     private final int rows = 640;
     private final int cols = 480;
-    public final static int sampleWidth = 100;
-    public final static int sampleHeight = 30;
+    public final static int sampleWidth = 30;
+    public final static int sampleHeight = 10;
     public final static Point topCenter = new Point(320, 400);
     public final static Point bottomCenter = new Point(320, 100);
     public final static int thresh = 100;
+    public static int stackSize = -1;
     OpenCvCamera webCam;
 
     @Override
@@ -114,8 +115,6 @@ public class scanPipeline extends LinearOpMode {
             Point topLeft2 = new Point(bottomCenter.x - sampleWidth,bottomCenter.y - sampleHeight);
             Point bottomRight2 = new Point(bottomCenter.x +sampleWidth, bottomCenter.y + sampleHeight);
 
-
-
             double color1 = 0;
             double color2 = 0;
 
@@ -133,8 +132,13 @@ public class scanPipeline extends LinearOpMode {
             }
             color2 /= (2*sampleWidth + 1)*(2*sampleHeight + 1);
 
-            Imgproc.rectangle(MediumRareMat, topLeft1, bottomRight1, color1 > thresh ? new Scalar(0, 255, 0) : new Scalar(255, 0, 0));
-            Imgproc.rectangle(MediumRareMat, topLeft2, bottomRight2, color2 > thresh ? new Scalar(0, 255, 0) : new Scalar(255, 0, 0));
+            boolean yellowness1 = color1 > thresh;
+            boolean yellowness2 = color2 > thresh;
+
+            if(yellowness1 && yellowness2) stackSize = 4; else if(yellowness2) stackSize = 1; else stackSize = 0;
+
+            Imgproc.rectangle(MediumRareMat, topLeft1, bottomRight1, yellowness1 ? new Scalar(0, 255, 0) : new Scalar(255, 0, 0));
+            Imgproc.rectangle(MediumRareMat, topLeft2, bottomRight2, yellowness2 ? new Scalar(0, 255, 0) : new Scalar(255, 0, 0));
 
             switch (stageToRenderToViewport)
             {
