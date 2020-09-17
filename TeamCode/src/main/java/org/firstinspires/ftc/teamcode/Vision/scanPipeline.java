@@ -37,6 +37,7 @@ public class scanPipeline extends LinearOpMode {
     public final static int sampleHeight = 30;
     public final static Point topCenter = new Point(320, 400);
     public final static Point bottomCenter = new Point(320, 100);
+    public final static int thresh = 100;
     OpenCvCamera webCam;
 
     @Override
@@ -123,17 +124,17 @@ public class scanPipeline extends LinearOpMode {
                     color1 += ExtractMat.get(i, j)[0];
                 }
             }
-            color1 /= (2*sampleWidth*2*sampleHeight);
+            color1 /= (2*sampleWidth + 1)*(2*sampleHeight + 1);
 
             for(int i = (int)topLeft2.x;i < (int)bottomRight2.x; i++){
                 for(int j = (int)topLeft2.y;  j> (int)bottomRight2.y; j--){
                     color2 += ExtractMat.get(i, j)[0];
                 }
             }
-            color2 /= (2*sampleWidth*2*sampleHeight);
+            color2 /= (2*sampleWidth + 1)*(2*sampleHeight + 1);
 
-            Imgproc.rectangle(MediumRareMat, topLeft1, bottomRight2, new Scalar(0, 255, 0));
-            Imgproc.rectangle(MediumRareMat, topLeft1, bottomRight2, new Scalar(0,255, 0));
+            Imgproc.rectangle(MediumRareMat, topLeft1, bottomRight1, color1 > thresh ? new Scalar(0, 255, 0) : new Scalar(255, 0, 0));
+            Imgproc.rectangle(MediumRareMat, topLeft2, bottomRight2, color2 > thresh ? new Scalar(0, 255, 0) : new Scalar(255, 0, 0));
 
             switch (stageToRenderToViewport)
             {
