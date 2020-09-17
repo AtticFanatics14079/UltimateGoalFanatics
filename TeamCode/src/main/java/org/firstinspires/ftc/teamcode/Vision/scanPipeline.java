@@ -107,15 +107,33 @@ public class scanPipeline extends LinearOpMode {
             Imgproc.cvtColor(input, YCRCBMat, Imgproc.COLOR_RGB2YCrCb);
             Core.extractChannel(YCRCBMat,ExtractMat, 1 );
             Imgproc.cvtColor(ExtractMat, MediumRareMat, Imgproc.COLOR_GRAY2RGB);
+
             Point topLeft1 = new Point(topCenter.x - sampleWidth,topCenter.y - sampleHeight);
-            Point bottomLeft1 = new Point(topCenter.x +sampleWidth, topCenter.y + sampleHeight);
+            Point bottomRight1 = new Point(topCenter.x +sampleWidth, topCenter.y + sampleHeight);
             Point topLeft2 = new Point(bottomCenter.x - sampleWidth,bottomCenter.y - sampleHeight);
-            Point bottomLeft2 = new Point(bottomCenter.x +sampleWidth, bottomCenter.y + sampleHeight);
-            Imgproc.rectangle(MediumRareMat, topLeft1, bottomLeft1, new Scalar(0, 255, 0));
-            Imgproc.rectangle(MediumRareMat, topLeft1, bottomLeft2, new Scalar(0,255, 0));
+            Point bottomRight2 = new Point(bottomCenter.x +sampleWidth, bottomCenter.y + sampleHeight);
 
 
 
+            double color1 = 0;
+            double color2 = 0;
+
+            for(int i = (int)topLeft1.x;i < (int)bottomRight1.x; i++){
+                for(int j = (int)topLeft1.y;  j> (int)bottomRight1.y; j--){
+                    color1 += ExtractMat.get(i, j)[0];
+                }
+            }
+            color1 /= (2*sampleWidth*2*sampleHeight);
+
+            for(int i = (int)topLeft2.x;i < (int)bottomRight2.x; i++){
+                for(int j = (int)topLeft2.y;  j> (int)bottomRight2.y; j--){
+                    color2 += ExtractMat.get(i, j)[0];
+                }
+            }
+            color2 /= (2*sampleWidth*2*sampleHeight);
+
+            Imgproc.rectangle(MediumRareMat, topLeft1, bottomRight2, new Scalar(0, 255, 0));
+            Imgproc.rectangle(MediumRareMat, topLeft1, bottomRight2, new Scalar(0,255, 0));
 
             switch (stageToRenderToViewport)
             {
