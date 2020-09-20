@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussIntegrator;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -33,19 +34,20 @@ public class scanPipeline extends LinearOpMode {
 
     private final int rows = 640;
     private final int cols = 480;
-    public final static int sampleWidth = 30;
-    public final static int sampleHeight = 10;
-    public final static Point topCenter = new Point(320, 400);
-    public final static Point bottomCenter = new Point(320, 100);
-    public final static int thresh = 100;
+    public static int sampleWidth = 3;
+    public static int sampleHeight = 2;
+    public static Point topCenter = new Point(320, 100);
+    public static Point bottomCenter = new Point(320, 250);
+    public static int thresh = 140;
     public static int stackSize = -1;
+    private static double color1, color2;
     OpenCvCamera webCam;
 
     @Override
     public void runOpMode() throws InterruptedException {
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webCam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        webCam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam1"), cameraMonitorViewId);
         webCam.openCameraDevice();//open camera
         webCam.setPipeline(new StageSwitchingPipeline());//different stages
         webCam.startStreaming(rows, cols, OpenCvCameraRotation.UPRIGHT);//display on RC
@@ -57,6 +59,9 @@ public class scanPipeline extends LinearOpMode {
         while (opModeIsActive()) {
             telemetry.addData("Height", rows);
             telemetry.addData("Width", cols);
+            telemetry.addData("Color1: ", color1);
+            telemetry.addData("Color2: ", color2);
+            telemetry.addData("StackSize: ", stackSize);
 
             telemetry.update();
             sleep(100);
@@ -106,28 +111,28 @@ public class scanPipeline extends LinearOpMode {
         public Mat processFrame(Mat input)
         {
             rawMat = input;
-            Imgproc.cvtColor(input, YCRCBMat, Imgproc.COLOR_RGB2YCrCb);
-            Core.extractChannel(YCRCBMat,ExtractMat, 1 );
+            Imgproc.cvtColor(input, YCRCBMat, Imgproc.COLOR_BGR2YCrCb);
+            Core.extractChannel(YCRCBMat,ExtractMat, 2);
             Imgproc.cvtColor(ExtractMat, MediumRareMat, Imgproc.COLOR_GRAY2RGB);
 
             Point topLeft1 = new Point(topCenter.x - sampleWidth,topCenter.y - sampleHeight);
-            Point bottomRight1 = new Point(topCenter.x +sampleWidth, topCenter.y + sampleHeight);
+            Point bottomRight1 = new Point(topCenter.x + sampleWidth, topCenter.y + sampleHeight);
             Point topLeft2 = new Point(bottomCenter.x - sampleWidth,bottomCenter.y - sampleHeight);
             Point bottomRight2 = new Point(bottomCenter.x +sampleWidth, bottomCenter.y + sampleHeight);
 
-            double color1 = 0;
-            double color2 = 0;
+            color1 = 0;
+            color2 = 0;
 
-            for(int i = (int)topLeft1.x;i < (int)bottomRight1.x; i++){
-                for(int j = (int)topLeft1.y;  j> (int)bottomRight1.y; j--){
-                    color1 += ExtractMat.get(i, j)[0];
+            for(int i = (int)(topLeft1.x); i <= (int)(bottomRight1.x); i++){
+                for(int j = (int)topLeft1.y;  j <= (int)bottomRight1.y; j++){
+                    color1 += ExtractMat.get(j, i)[0];
                 }
             }
             color1 /= (2*sampleWidth + 1)*(2*sampleHeight + 1);
 
-            for(int i = (int)topLeft2.x;i < (int)bottomRight2.x; i++){
-                for(int j = (int)topLeft2.y;  j> (int)bottomRight2.y; j--){
-                    color2 += ExtractMat.get(i, j)[0];
+            for(int i = (int)(topLeft2.x); i <= (int)(bottomRight2.x); i++){
+                for(int j = (int)(topLeft2.y);  j <= (int)(bottomRight2.y); j++){
+                    color2 += ExtractMat.get(j, i)[0];
                 }
             }
             color2 /= (2*sampleWidth + 1)*(2*sampleHeight + 1);
@@ -144,7 +149,7 @@ public class scanPipeline extends LinearOpMode {
             {
                 case RAW:
                 {
-                    return rawMat;
+                    return MediumRareMat;
                 }
                 case YCRCB:
                 {
